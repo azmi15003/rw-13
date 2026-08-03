@@ -14,8 +14,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       where: { id },
       data: {
         status,
-        catatanAdmin: catatanAdmin || null,
-        resolvedAt: status === 'selesai' ? new Date() : null,
+        catatan_admin: catatanAdmin || null,
+        resolved_at: status === 'selesai' ? new Date() : null,
       }
     })
     return NextResponse.json({ success: true })

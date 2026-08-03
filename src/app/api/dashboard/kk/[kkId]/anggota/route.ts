@@ -23,19 +23,19 @@ export async function POST(
 
     const warga = await prisma.warga.create({
       data: {
-        kkId,
+        kk_id: kkId,
         nik: body.nik,
-        namaLengkap: body.namaLengkap,
-        tempatLahir: body.tempatLahir,
-        tanggalLahir: new Date(body.tanggalLahir),
-        jenisKelamin: body.jenisKelamin,
-        statusKeluarga: body.statusKeluarga,
+        nama_lengkap: body.namaLengkap,
+        tempat_lahir: body.tempatLahir,
+        tanggal_lahir: new Date(body.tanggalLahir),
+        jenis_kelamin: body.jenisKelamin,
+        status_keluarga: body.statusKeluarga,
         agama: body.agama,
         pendidikan: body.pendidikan,
         pekerjaan: body.pekerjaan || null,
-        statusPernikahan: body.statusPernikahan,
-        nomorHp: body.nomorHp || null,
-        statusAktif: 'aktif',
+        status_pernikahan: body.statusPernikahan,
+        nomor_hp: body.nomorHp || null,
+        status_aktif: 'aktif',
       }
     })
 

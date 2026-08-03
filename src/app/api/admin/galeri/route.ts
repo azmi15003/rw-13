@@ -16,7 +16,6 @@ export async function POST(req: NextRequest) {
         foto_url,
         kegiatan_id: kegiatan_id || null,
         keterangan: keterangan || null,
-        uploaded_by: user.id,
       }
     })
     return NextResponse.json({ success: true, id: data.id })

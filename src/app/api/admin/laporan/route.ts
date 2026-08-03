@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-    const profile = await prisma.user.findUnique({ where: { id: user.id } })
+    const profile = await prisma.users.findUnique({ where: { id: user.id } })
     if (!profile) return NextResponse.json({ error: 'User tidak ditemukan.' }, { status: 404 })
 
     const { pelaporNama, pelaporNik, pelaporHp, kategori, judul, deskripsi, lokasiKejadian, tanggalKejadian } = await req.json()
@@ -18,23 +18,23 @@ export async function POST(req: NextRequest) {
     }
 
     const rtId = profile.role === 'super_admin'
-      ? (await prisma.rt.findFirst({ orderBy: { nomorRt: 'asc' } }))?.id
-      : profile.rtId
+      ? (await prisma.rt.findFirst({ orderBy: { nomor_rt: 'asc' } }))?.id
+      : profile.rt_id
 
     if (!rtId) return NextResponse.json({ error: 'RT tidak ditemukan.' }, { status: 400 })
 
     const data = await prisma.laporan.create({
       data: {
-        rtId,
-        pelaporNama,
-        pelaporNik: pelaporNik || null,
-        pelaporHp: pelaporHp || null,
+        rt_id: rtId,
+        pelapor_nama: pelaporNama,
+        pelapor_nik: pelaporNik || null,
+        pelapor_hp: pelaporHp || null,
         kategori,
         judul,
         deskripsi,
-        lokasiKejadian: lokasiKejadian || null,
-        tanggalKejadian: tanggalKejadian ? new Date(tanggalKejadian) : null,
-        createdBy: user.id,
+        lokasi_kejadian: lokasiKejadian || null,
+        tanggal_kejadian: tanggalKejadian ? new Date(tanggalKejadian) : null,
+        created_by: user.id,
         status: 'masuk',
       }
     })
