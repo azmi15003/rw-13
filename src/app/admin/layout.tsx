@@ -1,8 +1,6 @@
 import DashboardSidebar from '@/components/dashboard/Sidebar'
 import { requireSuperAdmin, getUserProfile } from '@/lib/auth'
 
-export const dynamic = 'force-dynamic'
-
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   await requireSuperAdmin()
   const profile = await getUserProfile()
