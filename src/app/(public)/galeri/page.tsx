@@ -4,24 +4,29 @@ import GaleriClient from './GaleriClient'
 export const revalidate = 60
 
 export default async function GaleriPage() {
-  // Ambil foto dari galeri_kegiatan
-  const galeri = await prisma.galeri_kegiatan.findMany({
-    include: {
-      kegiatan: { select: { judul: true, kategori: true, tanggal_mulai: true } },
-    },
-    orderBy: { uploaded_at: 'desc' },
-    take: 50,
-  })
+  let galeri: any[] = []
+  let beritaFoto: any[] = []
 
-  // Ambil foto dari pengumuman yang punya foto
-  const beritaFoto = await prisma.pengumuman.findMany({
-    where: {
-      foto_url: { not: null },
-      published_at: { not: null },
-    },
-    orderBy: { published_at: 'desc' },
-    take: 20,
-  })
+  try {
+    galeri = await prisma.galeri_kegiatan.findMany({
+      include: {
+        kegiatan: { select: { judul: true, kategori: true, tanggal_mulai: true } },
+      },
+      orderBy: { uploaded_at: 'desc' },
+      take: 50,
+    })
+
+    beritaFoto = await prisma.pengumuman.findMany({
+      where: {
+        foto_url: { not: null },
+        published_at: { not: null },
+      },
+      orderBy: { published_at: 'desc' },
+      take: 20,
+    })
+  } catch (e) {
+    console.error('[GaleriPage] Failed to fetch data at build/runtime', e)
+  }
 
   const totalFoto = galeri.length + beritaFoto.length
 
