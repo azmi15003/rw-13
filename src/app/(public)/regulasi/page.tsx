@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma'
 
 export const revalidate = 300
+export const dynamic = 'force-dynamic'
 
 const REGULASI_DEFAULT = [
   {
@@ -24,10 +25,15 @@ const REGULASI_DEFAULT = [
 ]
 
 export default async function RegulasiPage() {
-  const dokumenRegulasiDB = await prisma.dokumen.findMany({
-    where: { kategori: 'regulasi' },
-    orderBy: { created_at: 'desc' },
-  })
+  let dokumenRegulasiDB: any[] = []
+  try {
+    dokumenRegulasiDB = await prisma.dokumen.findMany({
+      where: { kategori: 'regulasi' },
+      orderBy: { created_at: 'desc' },
+    })
+  } catch (e) {
+    console.error('[RegulasiPage] DB error', e)
+  }
 
   return (
     <div className="pt-14">

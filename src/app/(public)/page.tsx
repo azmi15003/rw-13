@@ -6,30 +6,45 @@ import AnimatedSection from '@/components/public/AnimatedSection'
 
 export const revalidate = 60
 
+export const dynamic = 'force-dynamic'
+
 export default async function HomePage() {
-  const [rw, totalKK, totalWarga, rtList, beritaTerbaru, kegiatanMendatang, dokumenTerbaru] = await Promise.all([
-    prisma.rw.findFirst(),
-    prisma.kartu_keluarga.count(),
-    prisma.warga.count({ where: { status_aktif: 'aktif' } }),
-    prisma.rt.findMany({ orderBy: { nomor_rt: 'asc' } }),
-    prisma.pengumuman.findMany({
-      where: { published_at: { not: null } },
-      orderBy: { published_at: 'desc' },
-      take: 3,
-    }),
-    prisma.kegiatan.findMany({
-      where: {
-        tanggal_mulai: { gte: new Date() },
-        published_at: { not: null },
-      },
-      orderBy: { tanggal_mulai: 'asc' },
-      take: 3,
-    }),
-    prisma.dokumen.findMany({
-      orderBy: { created_at: 'desc' },
-      take: 4,
-    }),
-  ])
+  let rw = null
+  let totalKK = 0
+  let totalWarga = 0
+  let rtList: any[] = []
+  let beritaTerbaru: any[] = []
+  let kegiatanMendatang: any[] = []
+  let dokumenTerbaru: any[] = []
+
+  try {
+    const results = await Promise.all([
+      prisma.rw.findFirst(),
+      prisma.kartu_keluarga.count(),
+      prisma.warga.count({ where: { status_aktif: 'aktif' } }),
+      prisma.rt.findMany({ orderBy: { nomor_rt: 'asc' } }),
+      prisma.pengumuman.findMany({
+        where: { published_at: { not: null } },
+        orderBy: { published_at: 'desc' },
+        take: 3,
+      }),
+      prisma.kegiatan.findMany({
+        where: {
+          tanggal_mulai: { gte: new Date() },
+          published_at: { not: null },
+        },
+        orderBy: { tanggal_mulai: 'asc' },
+        take: 3,
+      }),
+      prisma.dokumen.findMany({
+        orderBy: { created_at: 'desc' },
+        take: 4,
+      }),
+    ])
+    ;[rw, totalKK, totalWarga, rtList, beritaTerbaru, kegiatanMendatang, dokumenTerbaru] = results
+  } catch (e) {
+    console.error('[HomePage] Failed to fetch data', e)
+  }
 
   const KATEGORI_COLOR: Record<string, string> = {
     pembangunan: 'bg-orange-100 text-orange-700 border-orange-200',

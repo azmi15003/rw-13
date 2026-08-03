@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma'
 
 export const revalidate = 60
+export const dynamic = 'force-dynamic'
 
 const KATEGORI_ICON: Record<string, string> = {
   kependudukan: '🪪', pernikahan: '💒', kematian: '🕊️', regulasi: '📋', lainnya: '📎',
@@ -20,10 +21,15 @@ export default async function DokumenPublikPage({
   const params = await searchParams
   const kategoriFilter = params.kategori || ''
 
-  const dokumen = await prisma.dokumen.findMany({
-    where: kategoriFilter ? { kategori: kategoriFilter as any } : {},
-    orderBy: { created_at: 'desc' },
-  })
+  let dokumen: any[] = []
+  try {
+    dokumen = await prisma.dokumen.findMany({
+      where: kategoriFilter ? { kategori: kategoriFilter as any } : {},
+      orderBy: { created_at: 'desc' },
+    })
+  } catch (e) {
+    console.error('[DokumenPublikPage] DB error', e)
+  }
 
   const kategoriList = ['kependudukan', 'pernikahan', 'kematian', 'regulasi', 'lainnya']
 
