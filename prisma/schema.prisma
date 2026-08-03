@@ -1,0 +1,334 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model dokumen {
+  id           String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nama         String          @db.VarChar(200)
+  deskripsi    String?
+  kategori     KategoriDokumen
+  file_url     String
+  tipe_file    TipeFile
+  ukuran_bytes Int
+  jumlah_unduh Int             @default(0)
+  uploaded_by  String?         @db.Uuid
+  created_at   DateTime        @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime        @default(now()) @db.Timestamptz(6)
+  users        users?          @relation(fields: [uploaded_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([kategori], map: "idx_dokumen_kategori")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model galeri_kegiatan {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  kegiatan_id String   @db.Uuid
+  foto_url    String
+  keterangan  String?  @db.VarChar(200)
+  urutan      Int      @default(0)
+  uploaded_at DateTime @default(now()) @db.Timestamptz(6)
+  kegiatan    kegiatan @relation(fields: [kegiatan_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([kegiatan_id], map: "idx_galeri_kegiatan_id")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model kartu_keluarga {
+  id                String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nomor_kk          String           @unique @db.VarChar(16)
+  rt_id             String           @db.Uuid
+  alamat_lengkap    String
+  blok_nomor        String?          @db.VarChar(20)
+  status_verifikasi StatusVerifikasi @default(pending)
+  created_by        String?          @db.Uuid
+  created_at        DateTime         @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime         @default(now()) @db.Timestamptz(6)
+  users             users?           @relation(fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  rt                rt               @relation(fields: [rt_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  warga             warga[]
+
+  @@index([rt_id], map: "idx_kk_rt_id")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model kegiatan {
+  id              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  judul           String            @db.VarChar(200)
+  deskripsi       String?
+  kategori        KategoriKegiatan
+  tanggal_mulai   DateTime          @db.Timestamptz(6)
+  tanggal_selesai DateTime?         @db.Timestamptz(6)
+  lokasi          String?           @db.VarChar(200)
+  foto_url        String?
+  created_by      String?           @db.Uuid
+  published_at    DateTime?         @db.Timestamptz(6)
+  created_at      DateTime          @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime          @default(now()) @db.Timestamptz(6)
+  galeri_kegiatan galeri_kegiatan[]
+  users           users?            @relation(fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([published_at], map: "idx_kegiatan_published")
+  @@index([tanggal_mulai], map: "idx_kegiatan_tanggal")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model org_chart_node {
+  id                   String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  parent_id            String?          @db.Uuid
+  nama                 String           @db.VarChar(150)
+  jabatan              String           @db.VarChar(150)
+  foto_url             String?
+  warna                String?          @default("#185FA5") @db.VarChar(20)
+  tipe                 String?          @default("rw") @db.VarChar(20)
+  urutan               Int              @default(0)
+  created_at           DateTime         @default(now()) @db.Timestamptz(6)
+  updated_at           DateTime         @default(now()) @db.Timestamptz(6)
+  org_chart_node       org_chart_node?  @relation("org_chart_nodeToorg_chart_node", fields: [parent_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  other_org_chart_node org_chart_node[] @relation("org_chart_nodeToorg_chart_node")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model pengumuman {
+  id           String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  judul        String             @db.VarChar(200)
+  konten       String
+  kategori     KategoriPengumuman
+  foto_url     String?
+  scope        ScopePengumuman    @default(rw)
+  rt_id        String?            @db.Uuid
+  created_by   String?            @db.Uuid
+  published_at DateTime?          @db.Timestamptz(6)
+  created_at   DateTime           @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime           @default(now()) @db.Timestamptz(6)
+  users        users?             @relation(fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  rt           rt?                @relation(fields: [rt_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([published_at], map: "idx_pengumuman_published")
+  @@index([scope], map: "idx_pengumuman_scope")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model rt {
+  id             String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nomor_rt       String           @db.VarChar(3)
+  nama_ketua     String           @db.VarChar(100)
+  kontak_ketua   String?          @db.VarChar(20)
+  created_at     DateTime         @default(now()) @db.Timestamptz(6)
+  kartu_keluarga kartu_keluarga[]
+  laporan        laporan[]
+  pengumuman     pengumuman[]
+  users          users[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model rw {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nama_rw        String   @db.VarChar(100)
+  alamat_kantor  String?
+  telepon        String?  @db.VarChar(20)
+  whatsapp_admin String?  @db.VarChar(20)
+  email          String?  @db.VarChar(100)
+  visi           String?
+  misi           String?
+  logo_url       String?
+  created_at     DateTime @default(now()) @db.Timestamptz(6)
+  updated_at     DateTime @default(now()) @db.Timestamptz(6)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model users {
+  id             String           @id @db.Uuid
+  nama_lengkap   String           @db.VarChar(150)
+  email          String           @unique @db.VarChar(254)
+  role           UserRole         @default(admin_rt)
+  rt_id          String?          @db.Uuid
+  created_at     DateTime         @default(now()) @db.Timestamptz(6)
+  updated_at     DateTime         @default(now()) @db.Timestamptz(6)
+  dokumen        dokumen[]
+  kartu_keluarga kartu_keluarga[]
+  kegiatan       kegiatan[]
+  laporan        laporan[]
+  pengumuman     pengumuman[]
+  rt             rt?              @relation(fields: [rt_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model warga {
+  id                     String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  kk_id                  String           @db.Uuid
+  nik                    String           @unique @db.VarChar(16)
+  nama_lengkap           String           @db.VarChar(150)
+  tempat_lahir           String           @db.VarChar(100)
+  tanggal_lahir          DateTime         @db.Date
+  jenis_kelamin          JenisKelamin
+  status_keluarga        StatusKeluarga
+  agama                  Agama
+  pendidikan             Pendidikan
+  pekerjaan              String?          @db.VarChar(100)
+  status_pernikahan      StatusPernikahan
+  nomor_hp               String?          @db.VarChar(20)
+  status_aktif           StatusAktif      @default(aktif)
+  tanggal_tidak_aktif    DateTime?        @db.Date
+  keterangan_tidak_aktif String?
+  created_at             DateTime         @default(now()) @db.Timestamptz(6)
+  updated_at             DateTime         @default(now()) @db.Timestamptz(6)
+  kartu_keluarga         kartu_keluarga   @relation(fields: [kk_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([jenis_kelamin], map: "idx_warga_jk")
+  @@index([kk_id], map: "idx_warga_kk_id")
+  @@index([status_aktif], map: "idx_warga_status")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model laporan {
+  id               String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  rt_id            String          @db.Uuid
+  pelapor_nama     String          @db.VarChar(150)
+  pelapor_nik      String?         @db.VarChar(16)
+  pelapor_hp       String?         @db.VarChar(20)
+  kategori         KategoriLaporan
+  judul            String          @db.VarChar(200)
+  deskripsi        String
+  lokasi_kejadian  String?
+  tanggal_kejadian DateTime?       @db.Date
+  status           StatusLaporan   @default(masuk)
+  catatan_admin    String?
+  created_by       String?         @db.Uuid
+  resolved_at      DateTime?       @db.Timestamptz(6)
+  created_at       DateTime        @default(now()) @db.Timestamptz(6)
+  updated_at       DateTime        @default(now()) @db.Timestamptz(6)
+  users            users?          @relation(fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  rt               rt              @relation(fields: [rt_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([kategori], map: "idx_laporan_kategori")
+  @@index([rt_id], map: "idx_laporan_rt_id")
+  @@index([status], map: "idx_laporan_status")
+}
+
+enum Agama {
+  Islam
+  Kristen
+  Katolik
+  Hindu
+  Buddha
+  Konghucu
+}
+
+enum JenisKelamin {
+  L
+  P
+}
+
+enum JenisOrganisasi {
+  rw
+  rt
+  karang_taruna
+}
+
+enum KategoriDokumen {
+  kependudukan
+  pernikahan
+  kematian
+  regulasi
+  lainnya
+}
+
+enum KategoriKegiatan {
+  sosial
+  kesehatan
+  pendidikan
+  keamanan
+  olahraga
+  lingkungan
+  ekonomi
+  lainnya
+}
+
+enum KategoriPengumuman {
+  pembangunan
+  kesehatan
+  digital
+  keamanan
+  sosial
+  administrasi
+  lainnya
+}
+
+enum Pendidikan {
+  tidak_sekolah
+  SD
+  SMP
+  SMA
+  D1
+  D2
+  D3
+  S1
+  S2
+  S3
+}
+
+enum ScopePengumuman {
+  rw
+  rt_specific
+}
+
+enum StatusAktif {
+  aktif
+  pindah
+  meninggal
+}
+
+enum StatusKeluarga {
+  kepala_kk
+  istri
+  anak
+  lain
+}
+
+enum StatusPernikahan {
+  belum_menikah
+  menikah
+  cerai_hidup
+  cerai_mati
+}
+
+enum StatusVerifikasi {
+  verified
+  pending
+}
+
+enum TipeFile {
+  pdf
+  docx
+  xlsx
+}
+
+enum UserRole {
+  super_admin
+  admin_rt
+}
+
+enum KategoriLaporan {
+  kehilangan
+  kerusakan_fasilitas
+  keamanan
+  kebersihan
+  sosial
+  administrasi
+  lainnya
+}
+
+enum StatusLaporan {
+  masuk
+  diproses
+  selesai
+  ditolak
+}
