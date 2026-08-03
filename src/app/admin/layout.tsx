@@ -1,9 +1,8 @@
 import DashboardSidebar from '@/components/dashboard/Sidebar'
-import { requireSuperAdmin, getUserProfile } from '@/lib/auth'
+import { requireSuperAdmin } from '@/lib/auth'
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  await requireSuperAdmin()
-  const profile = await getUserProfile()
+  const profile = await requireSuperAdmin()
 
   return (
     <div className="min-h-screen bg-gray-50 flex">

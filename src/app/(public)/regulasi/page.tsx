@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma'
 
 export const revalidate = 300
-export const dynamic = 'force-dynamic'
+
 
 const REGULASI_DEFAULT = [
   {

@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma'
 
 export const revalidate = 60
-export const dynamic = 'force-dynamic'
+
 
 const KATEGORI_ICON: Record<string, string> = {
   kependudukan: '🪪', pernikahan: '💒', kematian: '🕊️', regulasi: '📋', lainnya: '📎',
