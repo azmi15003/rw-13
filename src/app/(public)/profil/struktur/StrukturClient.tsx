@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback } from 'react'
 
-type OrgNode = {
+export type OrgNode = {
   id: string
   parent_id: string | null
   nama: string

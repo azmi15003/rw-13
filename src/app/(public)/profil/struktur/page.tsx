@@ -1,9 +1,9 @@
 import { prisma } from '@/lib/prisma'
-import StrukturClient from './StrukturClient'
+import StrukturClient, { OrgNode } from './StrukturClient'
 
 export const revalidate = 300
 
-const DEFAULT_NODES = [
+const DEFAULT_NODES: OrgNode[] = [
   { id: '1', parent_id: null, nama: 'H. Ahmad Sulaiman', jabatan: 'Ketua RW 13', foto_url: null, warna: '#185FA5', urutan: 0, tipe: 'rw' },
   { id: '2', parent_id: '1', nama: 'Ibu Maya Sari', jabatan: 'Sekretaris', foto_url: null, warna: '#185FA5', urutan: 1, tipe: 'rw' },
   { id: '3', parent_id: '1', nama: 'Bpk. Bambang Heru', jabatan: 'Bendahara', foto_url: null, warna: '#185FA5', urutan: 2, tipe: 'rw' },
