@@ -1,15 +1,16 @@
 import { createClient } from './supabase/server'
 import { prisma } from './prisma'
 import { redirect } from 'next/navigation'
+import { cache } from 'react'
 
-export async function getUser() {
+export const getUser = cache(async () => {
   const supabase = await createClient()
   const { data: { user }, error } = await supabase.auth.getUser()
   if (error || !user) return null
   return user
-}
+})
 
-export async function getUserProfile() {
+export const getUserProfile = cache(async () => {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return null
@@ -19,7 +20,7 @@ export async function getUserProfile() {
     include: { rt: true }
   })
   return profile
-}
+})
 
 // Wajib login — redirect ke /login kalau belum
 export async function requireAuth() {

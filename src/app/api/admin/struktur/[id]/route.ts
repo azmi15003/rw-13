@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/prisma'
+import { revalidatePath } from 'next/cache'
 
 export async function PATCH(
   req: NextRequest,
@@ -26,6 +27,7 @@ export async function PATCH(
         foto_url: foto_url || null,
       }
     })
+    revalidatePath('/profil/struktur')
     return NextResponse.json({ success: true })
   } catch (error: any) {
     console.error('[PATCH /api/admin/struktur]', error)
@@ -45,6 +47,7 @@ export async function DELETE(
     const { id } = await params
     // Cascade delete sudah dihandle di database (ON DELETE CASCADE)
     await prisma.org_chart_node.delete({ where: { id } })
+    revalidatePath('/profil/struktur')
     return NextResponse.json({ success: true })
   } catch (error: any) {
     console.error('[DELETE /api/admin/struktur]', error)

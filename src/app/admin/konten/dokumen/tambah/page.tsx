@@ -18,6 +18,7 @@ export default function TambahDokumenPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!file) { setError('Pilih file terlebih dahulu.'); return }
+    if (file.size > 10 * 1024 * 1024) { setError('Ukuran file maksimal 10 MB.'); return }
     setLoading(true)
     setError('')
 

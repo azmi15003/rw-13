@@ -49,30 +49,41 @@ export default function UploadGaleriForm({
       const supabase = createClient()
       let uploaded = 0
 
-      for (const file of files) {
-        const ext = file.name.split('.').pop()
-        const fileName = `galeri-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
-
-        const { error: uploadErr } = await supabase.storage
-          .from('foto-kegiatan')
-          .upload(fileName, file)
-        if (uploadErr) continue
-
-        const { data: { publicUrl } } = supabase.storage.from('foto-kegiatan').getPublicUrl(fileName)
-
-        await fetch('/api/admin/galeri', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            foto_url: publicUrl,
-            kegiatan_id: kegiatanId || null,
-            keterangan: keterangan || null,
-          }),
-        })
-        uploaded++
+      // Filter out files that are larger than 5MB
+      const validFiles = files.filter(f => f.size <= 5 * 1024 * 1024)
+      if (validFiles.length < files.length) {
+        setError('Beberapa file diabaikan karena ukurannya melebihi 5 MB.')
       }
 
-      setSuccess(`${uploaded} foto berhasil diupload!`)
+      await Promise.all(
+        validFiles.map(async (file) => {
+          const ext = file.name.split('.').pop()
+          const fileName = `galeri-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
+
+          const { error: uploadErr } = await supabase.storage
+            .from('foto-kegiatan')
+            .upload(fileName, file)
+          if (uploadErr) return
+
+          const { data: { publicUrl } } = supabase.storage.from('foto-kegiatan').getPublicUrl(fileName)
+
+          const res = await fetch('/api/admin/galeri', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              foto_url: publicUrl,
+              kegiatan_id: kegiatanId || null,
+              keterangan: keterangan || null,
+            }),
+          })
+          
+          if (res.ok) {
+            uploaded++
+          }
+        })
+      )
+
+      setSuccess(`${uploaded} dari ${files.length} foto berhasil diupload!`)
       setFiles([])
       setPreviews([])
       setKeterangan('')

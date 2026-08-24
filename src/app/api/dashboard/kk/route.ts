@@ -71,11 +71,11 @@ export async function POST(req: NextRequest) {
       return kk
     })
 
-    console.log(result, 'ini result');
+
 
     return NextResponse.json({ success: true, id: result.id })
   } catch (error: any) {
-    console.log(error, 'ini error')
+
     console.error('Error creating KK:', error)
     if (error.code === 'P2002') {
       return NextResponse.json({ error: 'Nomor KK atau NIK sudah terdaftar.' }, { status: 400 })

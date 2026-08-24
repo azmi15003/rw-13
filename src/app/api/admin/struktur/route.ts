@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/prisma'
+import { revalidatePath } from 'next/cache'
 
 export async function POST(req: NextRequest) {
   try {
@@ -22,6 +23,7 @@ export async function POST(req: NextRequest) {
         foto_url: foto_url || null,
       }
     })
+    revalidatePath('/profil/struktur')
     return NextResponse.json({ success: true, id: data.id })
   } catch (error: any) {
     console.error('[POST /api/admin/struktur]', error)
