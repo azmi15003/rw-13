@@ -25,6 +25,7 @@ const navLinks = [
   },
   { href: '/regulasi', label: 'Regulasi' },
   { href: '/potensi', label: 'Potensi' },
+  { href: '/laporan', label: 'Papan Laporan' },
   { href: '/galeri', label: 'Galeri' },
   { href: '/dokumen', label: 'Dokumen' },
 ]
