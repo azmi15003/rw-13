@@ -4,19 +4,30 @@ export const revalidate = 60
 
 export default async function PotensiPage() {
   let potensiDB: any[] = []
+  let totalKK = 0
+  let totalWarga = 0
+  let totalRT = 0
+
   try {
-    potensiDB = await prisma.potensi.findMany({
-      orderBy: { created_at: 'asc' }
-    })
+    const results = await Promise.all([
+      prisma.potensi.findMany({ orderBy: { created_at: 'asc' } }),
+      prisma.kartu_keluarga.count(),
+      prisma.warga.count({ where: { status_aktif: 'aktif' } }),
+      prisma.rt.count(),
+    ])
+    potensiDB = results[0]
+    totalKK = results[1]
+    totalWarga = results[2]
+    totalRT = results[3]
   } catch (error) {
     console.error('Failed to fetch potensi', error)
   }
 
   const stats = [
-    { value: '302+', label: 'Kepala Keluarga' },
-    { value: '1.131+', label: 'Warga Aktif' },
-    { value: '8', label: 'RT Aktif' },
-    { value: '45+', label: 'UMKM Warga' },
+    { value: `${totalKK}+`, label: 'Kepala Keluarga' },
+    { value: `${totalWarga}+`, label: 'Warga Aktif' },
+    { value: `${totalRT}`, label: 'RT Aktif' },
+    { value: `${potensiDB.length}`, label: 'Potensi Wilayah' },
   ]
 
   return (
