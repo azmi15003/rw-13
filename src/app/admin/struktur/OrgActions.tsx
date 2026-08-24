@@ -59,14 +59,24 @@ export default function OrgActions({ node, allNodes }: {
       let foto_url = node.foto_url
 
       if (foto) {
+        if (foto.size > 5 * 1024 * 1024) {
+          alert('Ukuran foto maksimal 5MB')
+          return
+        }
+
         const supabase = createClient()
         const ext = foto.name.split('.').pop()
         const fileName = `org-${Date.now()}.${ext}`
+        
         const { error } = await supabase.storage.from('foto-profil').upload(fileName, foto)
-        if (!error) {
-          const { data: { publicUrl } } = supabase.storage.from('foto-profil').getPublicUrl(fileName)
-          foto_url = publicUrl
+        if (error) {
+          alert('Gagal mengunggah foto: ' + error.message)
+          setLoading(false)
+          return
         }
+        
+        const { data: { publicUrl } } = supabase.storage.from('foto-profil').getPublicUrl(fileName)
+        foto_url = publicUrl
       }
 
       await fetch(`/api/admin/struktur/${node.id}`, {

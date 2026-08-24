@@ -49,6 +49,9 @@ export default function TambahNodeForm({ nodes }: {
       let foto_url: string | null = null
 
       if (foto) {
+        if (foto.size > 5 * 1024 * 1024) {
+          throw new Error('Ukuran foto maksimal 5MB')
+        }
         const supabase = createClient()
         const ext = foto.name.split('.').pop()
         const fileName = `org-${Date.now()}.${ext}`
