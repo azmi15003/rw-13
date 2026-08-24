@@ -56,10 +56,10 @@ export default function TambahNodeForm({ nodes }: {
         const ext = foto.name.split('.').pop()
         const fileName = `org-${Date.now()}.${ext}`
         const { error: uploadErr } = await supabase.storage
-          .from('foto-profil')
+          .from('photo-profile')
           .upload(fileName, foto)
         if (uploadErr) throw new Error('Gagal upload foto: ' + uploadErr.message)
-        const { data: { publicUrl } } = supabase.storage.from('foto-profil').getPublicUrl(fileName)
+        const { data: { publicUrl } } = supabase.storage.from('photo-profile').getPublicUrl(fileName)
         foto_url = publicUrl
       }
 

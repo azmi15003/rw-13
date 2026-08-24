@@ -68,14 +68,14 @@ export default function OrgActions({ node, allNodes }: {
         const ext = foto.name.split('.').pop()
         const fileName = `org-${Date.now()}.${ext}`
         
-        const { error } = await supabase.storage.from('foto-profil').upload(fileName, foto)
+        const { error } = await supabase.storage.from('photo-profile').upload(fileName, foto)
         if (error) {
           alert('Gagal mengunggah foto: ' + error.message)
           setLoading(false)
           return
         }
         
-        const { data: { publicUrl } } = supabase.storage.from('foto-profil').getPublicUrl(fileName)
+        const { data: { publicUrl } } = supabase.storage.from('photo-profile').getPublicUrl(fileName)
         foto_url = publicUrl
       }
 
