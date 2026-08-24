@@ -67,7 +67,7 @@ export default async function AdminRegulasiPage() {
                 <a href={d.file_url} target="_blank" className="text-xs font-medium text-blue-600 hover:underline">
                   Lihat File
                 </a>
-                <KontenActions id={d.id} type="dokumen" />
+                <KontenActions id={d.id} type="dokumen" isPublished={true} />
               </div>
             </div>
           ))}
