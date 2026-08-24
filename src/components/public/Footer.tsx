@@ -56,7 +56,7 @@ export default function PublicFooter() {
             <div className="space-y-3 text-sm text-white/60">
               <div className="flex items-start gap-2">
                 <span className="mt-0.5">📍</span>
-                <span>Jl. Melati No. 13, Kelurahan Digital, Kota Pintar</span>
+                <span>Komplek Bukit Padjadjaran RW 13 Desa Cikadut, Kecamatan Cimenyan, Kabupaten Bandung</span>
               </div>
               <div className="flex items-center gap-2">
                 <span>📞</span>

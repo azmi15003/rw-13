@@ -16,7 +16,9 @@ const adminMenuItems = [
   { href: '/admin', label: 'Overview RW', icon: '🏘️' },
   { href: '/admin/akun', label: 'Manajemen Akun', icon: '👤' },
   { href: '/admin/struktur', label: 'Struktur Organisasi', icon: '👤' },
-  { href: '/admin/konten', label: 'Konten', icon: '✏️' },
+  { href: '/admin/konten', label: 'Konten Publik', icon: '✏️' },
+  { href: '/admin/konten/potensi', label: 'Potensi Wilayah', icon: '🌟' },
+  { href: '/admin/konten/regulasi', label: 'Regulasi', icon: '⚖️' },
   { href: '/admin/laporan', label: 'Laporan', icon: '📈' },
 ]
 

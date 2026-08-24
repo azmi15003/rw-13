@@ -3,26 +3,7 @@ import { prisma } from '@/lib/prisma'
 export const revalidate = 300
 
 
-const REGULASI_DEFAULT = [
-  {
-    judul: 'Anggaran Dasar & Anggaran Rumah Tangga RW 13',
-    deskripsi: 'Dokumen dasar organisasi dan tata kelola RW 13',
-    tahun: '2024',
-    kategori: 'AD/ART',
-  },
-  {
-    judul: 'Tata Tertib Lingkungan RW 13',
-    deskripsi: 'Peraturan kebersihan, keamanan, dan ketertiban lingkungan',
-    tahun: '2024',
-    kategori: 'Tata Tertib',
-  },
-  {
-    judul: 'SOP Pelayanan Administrasi Warga',
-    deskripsi: 'Prosedur standar pelayanan surat menyurat dan administrasi',
-    tahun: '2024',
-    kategori: 'SOP',
-  },
-]
+
 
 export default async function RegulasiPage() {
   let dokumenRegulasiDB: any[] = []
@@ -80,26 +61,15 @@ export default async function RegulasiPage() {
             ))}
           </div>
         ) : (
-          // Default regulasi kalau belum ada di database
           <div className="space-y-3 mb-8">
-            <h2 className="text-sm font-bold text-gray-900 mb-4">Regulasi RW 13</h2>
-            {REGULASI_DEFAULT.map((r, i) => (
-              <div key={i} className="bg-white border border-gray-200 rounded-2xl p-5 flex items-center gap-4">
-                <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center text-2xl flex-shrink-0">📋</div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-0.5">
-                    <h3 className="text-sm font-semibold text-gray-900">{r.judul}</h3>
-                    <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">{r.kategori}</span>
-                  </div>
-                  <p className="text-xs text-gray-500">{r.deskripsi}</p>
-                  <p className="text-xs text-gray-400 mt-1">Tahun {r.tahun}</p>
-                </div>
-                <span className="text-xs text-gray-400 italic flex-shrink-0">Segera tersedia</span>
-              </div>
-            ))}
-            <p className="text-xs text-center text-gray-400 mt-4">
-              Dokumen regulasi dapat diunduh setelah diupload oleh admin. Hubungi pengurus untuk informasi lebih lanjut.
-            </p>
+            <h2 className="text-sm font-bold text-gray-900 mb-4">Dokumen Regulasi</h2>
+            <div className="bg-white border border-gray-200 rounded-2xl p-8 text-center">
+              <div className="text-3xl mb-3">📁</div>
+              <p className="text-sm font-semibold text-gray-900 mb-1">Belum Ada Regulasi</p>
+              <p className="text-xs text-gray-500">
+                Dokumen regulasi RW 13 belum tersedia saat ini. Silakan hubungi pengurus untuk informasi lebih lanjut.
+              </p>
+            </div>
           </div>
         )}
 

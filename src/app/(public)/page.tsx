@@ -440,7 +440,7 @@ export default async function HomePage() {
 
                 <div className="space-y-6 mb-10">
                   {[
-                    { icon: '📍', title: 'Alamat Sekretariat', value: rw?.alamat_kantor || 'Komplek Bukit Padjadjaran RW 13 Desa Cikadut, kecamatan cimenyan, kabupaten bandung' },
+                    { icon: '📍', title: 'Alamat Sekretariat', value: rw?.alamat_kantor || 'Komplek Bukit Padjadjaran RW 13 Desa Cikadut, Kecamatan Cimenyan, Kabupaten Bandung' },
                     { icon: '📞', title: 'Telepon Pengurus', value: rw?.telepon || '(021) 555-0123' },
                     { icon: '💬', title: 'WhatsApp Admin', value: rw?.whatsapp_admin || '+62 812-3456-7890' },
                   ].map((info, i) => (
