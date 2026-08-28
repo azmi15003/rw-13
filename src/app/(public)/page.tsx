@@ -190,10 +190,10 @@ export default async function HomePage() {
                 <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition">
                   <div className="flex items-center gap-4 mb-4">
                     <div className="w-12 h-12 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center text-xl">🌳</div>
-                    <h3 className="text-xl font-bold text-gray-900">Lingkungan Kita</h3>
+                    <h3 className="text-xl font-bold text-gray-900">{rw?.judul_lingkungan || 'Lingkungan Kita'}</h3>
                   </div>
                   <p className="text-gray-600 leading-relaxed">
-                    RW 013 adalah lingkungan yang asri dan strategis di wilayah Kelurahan Cikadut, Kecamatan Cimenyan, Kabupaten Bandung. Wilayah kami terus berkembang dengan semangat kebersamaan dan gotong royong yang kuat.
+                    {rw?.deskripsi_lingkungan || 'RW 013 adalah lingkungan yang asri dan strategis di wilayah Kelurahan Cikadut, Kecamatan Cimenyan, Kabupaten Bandung. Wilayah kami terus berkembang dengan semangat kebersamaan dan gotong royong yang kuat.'}
                   </p>
                 </div>
               </AnimatedSection>
@@ -238,7 +238,7 @@ export default async function HomePage() {
               <AnimatedSection animation="slide-left" delay={100}>
                 <div className="group relative w-full h-[320px] rounded-[2rem] overflow-hidden shadow-xl">
                   <img
-                    src="https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=800&q=80"
+                    src={rw?.foto_kantor_url || "https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=800&q=80"}
                     alt="Lingkungan RW 13"
                     className="w-full h-full object-cover group-hover:scale-105 transition duration-700"
                   />
@@ -253,7 +253,7 @@ export default async function HomePage() {
               <AnimatedSection animation="slide-left" delay={300}>
                 <div className="group relative w-full h-[240px] rounded-[2rem] overflow-hidden shadow-xl">
                   <img
-                    src="https://images.unsplash.com/photo-1524661135-423995f22d0b?w=800&q=80"
+                    src={rw?.foto_peta_url || "https://images.unsplash.com/photo-1524661135-423995f22d0b?w=800&q=80"}
                     alt="Peta Wilayah"
                     className="w-full h-full object-cover group-hover:scale-105 transition duration-700"
                   />
@@ -286,36 +286,42 @@ export default async function HomePage() {
           </AnimatedSection>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
+            {(rw?.tugas_fungsi ? (typeof rw.tugas_fungsi === 'string' ? JSON.parse(rw.tugas_fungsi) : rw.tugas_fungsi) : [
               {
                 icon: '📁',
                 judul: 'Administratif Warga',
                 desc: 'Pengelolaan data kependudukan, pencatatan warga masuk/keluar, dan pembuatan tata tertib lingkungan secara terstruktur dan digital.',
-                color: 'from-blue-500 to-cyan-400'
               },
               {
                 icon: '🤝',
                 judul: 'Pelayanan Publik',
                 desc: 'Fasilitasi pembuatan surat pengantar, layanan kependudukan, resolusi konflik warga, dan penghubung dengan instansi pemerintah di atasnya.',
-                color: 'from-purple-500 to-pink-400'
               },
               {
                 icon: '🛠️',
                 judul: 'Pembangunan Lingkungan',
                 desc: 'Penggerak kerja bakti, inisiator pembangunan fasilitas umum, pemeliharaan keamanan, dan peningkatan kesejahteraan sosial warga.',
-                color: 'from-amber-500 to-orange-400'
               },
-            ].map((item, i) => (
+            ]).map((item: any, i: number) => {
+              const colors = [
+                'from-blue-500 to-cyan-400',
+                'from-purple-500 to-pink-400',
+                'from-amber-500 to-orange-400',
+                'from-emerald-500 to-teal-400',
+                'from-red-500 to-rose-400',
+              ]
+              const color = colors[i % colors.length]
+              return (
               <AnimatedSection key={i} animation="fade-up" delay={i * 200}>
                 <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-3xl p-8 hover:bg-gray-800 transition-colors h-full group">
-                  <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${item.color} flex items-center justify-center text-3xl mb-6 shadow-lg group-hover:scale-110 transition-transform`}>
+                  <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${color} flex items-center justify-center text-3xl mb-6 shadow-lg group-hover:scale-110 transition-transform`}>
                     {item.icon}
                   </div>
                   <h3 className="text-xl font-bold text-white mb-4">{item.judul}</h3>
                   <p className="text-gray-400 leading-relaxed">{item.desc}</p>
                 </div>
               </AnimatedSection>
-            ))}
+            )})}
           </div>
         </div>
       </section>

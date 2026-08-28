@@ -143,17 +143,22 @@ model rt {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model rw {
-  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  nama_rw        String   @db.VarChar(100)
-  alamat_kantor  String?
-  telepon        String?  @db.VarChar(20)
-  whatsapp_admin String?  @db.VarChar(20)
-  email          String?  @db.VarChar(100)
-  visi           String?
-  misi           String?
-  logo_url       String?
-  created_at     DateTime @default(now()) @db.Timestamptz(6)
-  updated_at     DateTime @default(now()) @db.Timestamptz(6)
+  id                   String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nama_rw              String   @db.VarChar(100)
+  alamat_kantor        String?
+  telepon              String?  @db.VarChar(20)
+  whatsapp_admin       String?  @db.VarChar(20)
+  email                String?  @db.VarChar(100)
+  visi                 String?
+  misi                 String?
+  tugas_fungsi         Json?
+  logo_url             String?
+  judul_lingkungan     String?
+  deskripsi_lingkungan String?
+  foto_kantor_url      String?
+  foto_peta_url        String?
+  created_at           DateTime @default(now()) @db.Timestamptz(6)
+  updated_at           DateTime @default(now()) @db.Timestamptz(6)
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.

@@ -14,6 +14,7 @@ const menuItems = [
 
 const adminMenuItems = [
   { href: '/admin', label: 'Overview RW', icon: '🏘️' },
+  { href: '/dashboard/profil-rw', label: 'Profil RW', icon: '📝' },
   { href: '/admin/akun', label: 'Manajemen Akun', icon: '👤' },
   { href: '/admin/struktur', label: 'Struktur Organisasi', icon: '👤' },
   { href: '/admin/konten', label: 'Konten Publik', icon: '✏️' },
