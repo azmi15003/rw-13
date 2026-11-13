@@ -4,6 +4,10 @@ import path from "node:path";
 /** @type {import('next').NextConfig} */
 const nextConfig: NextConfig = {
   output: 'standalone',
+  experimental: {
+    cpus: 1,
+    workerThreads: false,
+  },
   turbopack: {
     root: path.resolve(__dirname),
   },
