@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
@@ -39,7 +39,23 @@ export default function TambahKKPage() {
   const [nomorKK, setNomorKK] = useState('')
   const [alamat, setAlamat] = useState('')
   const [blokNomor, setBlokNomor] = useState('')
+  const [rtList, setRtList] = useState<{ id: string; nomor_rt: string; nama_ketua: string }[]>([])
+  const [selectedRtId, setSelectedRtId] = useState('')
   const [anggota, setAnggota] = useState<Anggota[]>([{ ...emptyAnggota() }])
+
+  useEffect(() => {
+    fetch('/api/dashboard/rt')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setRtList(data)
+          if (data.length > 0) {
+            setSelectedRtId(data[0].id)
+          }
+        }
+      })
+      .catch(() => {})
+  }, [])
 
   function updateAnggota(index: number, field: keyof Anggota, value: string) {
     setAnggota(prev => prev.map((a, i) => i === index ? { ...a, [field]: value } : a))
@@ -73,7 +89,7 @@ export default function TambahKKPage() {
       const res = await fetch('/api/dashboard/kk', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nomorKK, alamat, blokNomor, anggota }),
+        body: JSON.stringify({ nomorKK, alamat, blokNomor, rtId: selectedRtId, anggota }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Gagal menyimpan data.')
@@ -130,6 +146,22 @@ export default function TambahKKPage() {
                 placeholder="Blok A No. 12"
                 className="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900"
               />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1.5">Rukun Tetangga (RT) <span className="text-red-500">*</span></label>
+              <select
+                value={selectedRtId}
+                onChange={e => setSelectedRtId(e.target.value)}
+                required
+                className="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 bg-white"
+              >
+                {rtList.length === 0 && <option value="">Memuat RT...</option>}
+                {rtList.map(r => (
+                  <option key={r.id} value={r.id}>
+                    RT {r.nomor_rt} ({r.nama_ketua})
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
         </div>

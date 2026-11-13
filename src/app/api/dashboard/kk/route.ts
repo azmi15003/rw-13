@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
     })
     if (!profile) return NextResponse.json({ error: 'User tidak ditemukan' }, { status: 404 })
 
-    const { nomorKK, alamat, blokNomor, anggota } = await req.json()
+    const { nomorKK, alamat, blokNomor, anggota, rtId: inputRtId } = await req.json()
 
     // Validasi
     if (!nomorKK || nomorKK.length !== 16) {
@@ -30,10 +30,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Harus ada Kepala KK.' }, { status: 400 })
     }
 
-    // Tentukan rtId
-    const rtId = profile.role === 'super_admin'
-      ? (await prisma.rt.findFirst({ orderBy: { nomor_rt: 'asc' } }))?.id
-      : profile.rt_id
+    // Tentukan rtId (prioritaskan inputRtId jika super_admin, atau fallback ke rt profile)
+    const rtId = (profile.role === 'super_admin' && inputRtId)
+      ? inputRtId
+      : (profile.rt_id || inputRtId || (await prisma.rt.findFirst({ orderBy: { nomor_rt: 'asc' } }))?.id)
 
     if (!rtId) return NextResponse.json({ error: 'RT tidak ditemukan.' }, { status: 400 })
 

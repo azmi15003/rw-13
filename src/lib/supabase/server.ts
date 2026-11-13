@@ -1,37 +1,43 @@
-import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+import { verifySessionToken } from '@/lib/session'
 
 export async function createClient() {
   const cookieStore = await cookies()
+  const token = cookieStore.get('session_token')?.value
 
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll()
-        },
-        setAll(cookiesToSet) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            )
-          } catch {
-            // Server Component — cookies bisa di-set dari middleware
-          }
-        },
+  return {
+    auth: {
+      async getUser() {
+        if (!token) {
+          return { data: { user: null }, error: new Error('No session') }
+        }
+        const payload = await verifySessionToken(token)
+        if (!payload) {
+          return { data: { user: null }, error: new Error('Invalid session') }
+        }
+        return {
+          data: {
+            user: {
+              id: payload.id,
+              email: payload.email,
+              role: payload.role,
+            },
+          },
+          error: null,
+        }
       },
-    }
-  )
+    },
+  }
 }
 
-// Admin client — bypass RLS, hanya untuk Server Actions
 export function createAdminClient() {
-  const { createClient } = require('@supabase/supabase-js')
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { auth: { autoRefreshToken: false, persistSession: false } }
-  )
+  return {
+    auth: {
+      admin: {
+        async createUser({ email, password }: { email: string; password: string }) {
+          return { data: { user: { id: '', email } }, error: null }
+        },
+      },
+    },
+  }
 }

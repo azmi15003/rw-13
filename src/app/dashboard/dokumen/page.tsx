@@ -37,7 +37,7 @@ export default async function DokumenPage({
   const dokumen = await prisma.dokumen.findMany({
     where: {
       ...(kategoriFilter ? { kategori: kategoriFilter as any } : {}),
-      ...(q ? { OR: [{ nama: { contains: q, mode: 'insensitive' } }, { deskripsi: { contains: q, mode: 'insensitive' } }] } : {}),
+      ...(q ? { OR: [{ nama: { contains: q } }, { deskripsi: { contains: q } }] } : {}),
     },
     orderBy: { updated_at: 'desc' },
   })

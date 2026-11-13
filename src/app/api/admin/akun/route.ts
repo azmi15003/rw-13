@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createAdminClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/prisma'
 import { getUserProfile } from '@/lib/auth'
+import { hashPassword } from '@/lib/session'
 
 export async function POST(req: NextRequest) {
   // Verify caller is super_admin
@@ -22,38 +22,28 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    // 1. Create auth user in Supabase using admin client (bypasses RLS)
-    const supabaseAdmin = createAdminClient()
-    const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
-      email,
-      password,
-      email_confirm: true, // Auto-confirm the email
-    })
+    const hashedPassword = await hashPassword(password)
 
-    if (authError) {
-      return NextResponse.json({ error: authError.message }, { status: 400 })
-    }
-
-    // 2. Insert into users table via Prisma
-    await prisma.users.upsert({
+    const user = await prisma.users.upsert({
       where: {
-        email,
+        email: email.toLowerCase().trim(),
       },
       update: {
         nama_lengkap: namaLengkap,
+        password_hash: hashedPassword,
         role: role || 'admin_rt',
         rt_id: rtId || null,
       },
       create: {
-        id: authData.user.id,
         nama_lengkap: namaLengkap,
-        email,
+        email: email.toLowerCase().trim(),
+        password_hash: hashedPassword,
         role: role || 'admin_rt',
         rt_id: rtId || null,
       },
     })
 
-    return NextResponse.json({ success: true, userId: authData.user.id })
+    return NextResponse.json({ success: true, userId: user.id })
   } catch (err: any) {
     console.error('Error creating admin account:', err)
     return NextResponse.json({ error: err.message || 'Terjadi kesalahan.' }, { status: 500 })
